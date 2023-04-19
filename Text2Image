@@ -1,0 +1,28 @@
+# Initialization:
+!pip install diffusers
+!pip install torch
+!pip install transformers
+from diffusers import StableDiffusionPipeline
+import torch
+from PIL import Image
+import matplotlib.pyplot as plt
+import logging
+logging.getLogger("transformers").setLevel(logging.ERROR)
+logging.getLogger("StableDiffusionPipeline").setLevel(logging.ERROR)
+model_id = "runwayml/stable-diffusion-v1-5"
+pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16,timesteps=200, samples_per_timestep=20)
+pipe = pipe.to("cuda" if torch.cuda.is_available() else "cpu")
+
+# User inputs
+prompt='A person writing code on his computer'
+h=256 # set the height of the image
+w=256 # set the width of the image
+
+# main program
+list_images=[]
+for ng in range(4):
+  image = pipe(prompt, height=h, width=w).images[0]
+  list_images.append(image)
+  plt.figure(figsize=(10,10))
+  plt.imshow(image)
+plt.show()
